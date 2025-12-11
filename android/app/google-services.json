@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "940140289358",
+    "project_id": "kpp-labka-1700d",
+    "storage_bucket": "kpp-labka-1700d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940140289358:android:062ea3f3b2f213b8b1121f",
+        "android_client_info": {
+          "package_name": "com.example.kpp_lab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkQ3n1WucnFlsbG2ECDfd-0LCirlJ_Fl8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
