@@ -5,50 +5,68 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:kpp_lab/core/repositories/workout_repository.dart';
+import 'package:kpp_lab/core/repositories/progress_repository.dart';
 import 'package:kpp_lab/features/auth/screens/login_screen.dart';
 import 'package:kpp_lab/features/home/screens/home_screen.dart';
 import 'package:kpp_lab/features/journal/cubit/workout_cubit.dart';
+import 'package:kpp_lab/features/progress/cubit/progress_cubit.dart';
 import 'firebase_options.dart';
-import 'package:kpp_lab/core/repositories/progress_repository.dart'; 
-import 'package:kpp_lab/features/progress/cubit/progress_cubit.dart'; 
 
-void main() async {
+// --- ОСЬ ЦЬОГО КЛАСУ НЕ ВИСТАЧАЄ BITRISE ---
+class AppConfig {
+  final String supabaseUrl;
+  final String supabaseKey;
+  final String sentryDsn;
+  final String appTitle;
+
+  AppConfig({
+    required this.supabaseUrl,
+    required this.supabaseKey,
+    required this.sentryDsn,
+    required this.appTitle,
+  });
+}
+
+// --- І ЦІЄЇ ФУНКЦІЇ ---
+Future<void> mainCommon(AppConfig config) async {
   WidgetsFlutterBinding.ensureInitialized();
+  
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-await Supabase.initialize(
-    url: 'https://wempucsqrvtfboigmcer.supabase.co', 
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndlbXB1Y3NxcnZ0ZmJvaWdtY2VyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU0NzU1MTUsImV4cCI6MjA4MTA1MTUxNX0.MECLdBYhmK2CZPvti2rYwDCYVfCUYqRFa4C4O7SF8c0',
+  await Supabase.initialize(
+    url: config.supabaseUrl,
+    anonKey: config.supabaseKey,
   );
 
   await SentryFlutter.init(
     (options) {
-      options.dsn = 'https://5f76c7d4ea0302fe7336959762d9b6b2@o4510438545096704.ingest.de.sentry.io/4510438548373584';
+      options.dsn = config.sentryDsn;
       options.tracesSampleRate = 1.0;
     },
-    appRunner: () => runApp(const MyApp()),
+    appRunner: () => runApp(MyApp(title: config.appTitle)),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String title;
+  const MyApp({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     final workoutRepository = WorkoutRepository();
-    final progressRepository = ProgressRepository(); 
+    final progressRepository = ProgressRepository();
 
-    return MultiBlocProvider( 
+    return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (context) => WorkoutCubit(workoutRepository)..subscribeToWorkouts(),
         ),
-        BlocProvider( 
+        BlocProvider(
           create: (context) => ProgressCubit(progressRepository)..subscribeToPhotos(),
         ),
       ],
       child: MaterialApp(
-        title: 'FitTrack',
+        title: title,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
